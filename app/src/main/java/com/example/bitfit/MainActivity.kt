@@ -3,21 +3,56 @@ package com.example.bitfit
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.bitfit.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
+
 
 class MainActivity : AppCompatActivity() {
-    // Create var for sleep entries
-    private val articles = mutableListOf<SleepEntry>()
+    // Create var for displayable sleep entries, the recyclerview, and binding var
+    private val entries = mutableListOf<DisplayEntry>()
+    private lateinit var entriesRecyclerView: RecyclerView
+    private lateinit var binding: ActivityMainBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // bind
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        // set up recyclerview on main activity screen
+        entriesRecyclerView = findViewById(R.id.entries)
+        val entryAdapter = EntryAdapter(this, entries)
+        entriesRecyclerView.adapter = entryAdapter
+
+        // set up dividers in the vertical layout
+        entriesRecyclerView.layoutManager = LinearLayoutManager(this).also {
+            val dividerItemDecoration = DividerItemDecoration(this, it.orientation)
+            entriesRecyclerView.addItemDecoration(dividerItemDecoration)
+        }
+
+        // continuously check database for changes and display items
+        lifecycleScope.launch {
+            (application as SleepApplication).db.entryDao().getAll().collect { databaseList ->
+                // Map each entity in the database to a displayable model if needed
+                databaseList.map { entity ->
+                    DisplayEntry(
+                        entity.date,
+                        entity.hours
+                    )
+                }.also { mappedList ->
+                    entries.clear()
+                    entries.addAll(mappedList)
+                    entryAdapter.notifyDataSetChanged()
+                }
+            }
         }
     }
 }
