@@ -11,7 +11,10 @@ interface EntryDao {
     fun getAll(): Flow<List<EntryEntity>>
 
     @Insert
-    fun insertAll(articles: List<EntryEntity>)
+    fun insertAll(entries: List<EntryEntity>)
+
+    @Insert
+    fun insertOne(entry: EntryEntity)
 
     @Query("DELETE FROM entry_table")
     fun deleteAll()

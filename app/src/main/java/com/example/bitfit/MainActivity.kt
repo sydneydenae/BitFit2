@@ -1,6 +1,8 @@
 package com.example.bitfit
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -14,6 +16,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     // Create var for displayable sleep entries, the recyclerview, and binding var
     private val entries = mutableListOf<DisplayEntry>()
+   // private val context = Context
     private lateinit var entriesRecyclerView: RecyclerView
     private lateinit var binding: ActivityMainBinding
 
@@ -53,6 +56,16 @@ class MainActivity : AppCompatActivity() {
                     entryAdapter.notifyDataSetChanged()
                 }
             }
+        }
+
+        // Button links to another page
+        val button = findViewById<Button>(R.id.button)
+
+        button.setOnClickListener {
+            // intent to go to another page
+            val intent = Intent(this@MainActivity, EntryActivity::class.java)
+            this@MainActivity.startActivity(intent)
+
         }
     }
 }
