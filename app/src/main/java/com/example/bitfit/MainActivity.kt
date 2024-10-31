@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Button links to another page
-        val button = findViewById<Button>(R.id.button)
+        val button = findViewById<Button>(R.id.add_entry_button)
 
         button.setOnClickListener {
             // intent to go to another page
