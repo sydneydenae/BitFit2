@@ -42,7 +42,7 @@ class EntryAdapter(private val context: Context, private val entries: List<Displ
         // helper method to help set up the onBindViewHolder method
         fun bind(entry: DisplayEntry) {
             displayDateTextView.text = entry.date
-            displayHoursTextView.text = entry.hours
+            displayHoursTextView.text = entry.hours.toString()
         }
 
         /* use this for oon button click

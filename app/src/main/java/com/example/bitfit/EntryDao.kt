@@ -19,4 +19,7 @@ interface EntryDao {
     @Query("DELETE FROM entry_table")
     fun deleteAll()
 
+    @Query("SELECT AVG(hours) FROM entry_table")
+    fun getAverageHours(): Flow<Double>
+
 }

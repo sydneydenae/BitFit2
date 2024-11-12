@@ -28,9 +28,12 @@ class EntryActivity : AppCompatActivity() {
 
         enterButton.setOnClickListener{
             val date = dateEditText.text.toString()
-            val hours = hoursEditText.text.toString()
+            val hoursString = hoursEditText.text.toString()
+            val hours = hoursString.toInt()
 
-            if (date.isNotEmpty() && hours.isNotEmpty()) {
+
+
+            if (date.isNotEmpty() && hours != null) {
                 // Create a new SleepEntry with the input data
                 val newEntry = EntryEntity(date = date, hours = hours)
 
