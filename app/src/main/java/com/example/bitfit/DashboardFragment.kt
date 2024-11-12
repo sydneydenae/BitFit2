@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -45,9 +47,13 @@ class DashboardFragment : Fragment() {
         val button = view?.findViewById<Button>(R.id.clearButton)
 
         button?.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
                 // Access the EntryDao and call deleteAll()
                 (requireActivity().application as SleepApplication).db.entryDao().deleteAll()
+                // Use Dispatchers.Main to switch back to the main thread for UI updates
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "All entries deleted.", Toast.LENGTH_SHORT).show()
+                }
             }
 
             Toast.makeText(requireContext(),"All entries deleted.", Toast.LENGTH_SHORT).show()
