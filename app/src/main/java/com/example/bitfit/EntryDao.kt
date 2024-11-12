@@ -18,4 +18,5 @@ interface EntryDao {
 
     @Query("DELETE FROM entry_table")
     fun deleteAll()
+
 }

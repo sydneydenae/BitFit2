@@ -5,67 +5,66 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bitfit.databinding.ActivityMainBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
-    // Create var for displayable sleep entries, the recyclerview, and binding var
     private val entries = mutableListOf<DisplayEntry>()
-   // private val context = Context
-    private lateinit var entriesRecyclerView: RecyclerView
     private lateinit var binding: ActivityMainBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // bind
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
         enableEdgeToEdge()
 
-        // set up recyclerview on main activity screen
-        entriesRecyclerView = findViewById(R.id.entries)
-        val entryAdapter = EntryAdapter(this, entries)
-        entriesRecyclerView.adapter = entryAdapter
+        val fragmentManager: FragmentManager = supportFragmentManager
+        // define  fragments
+        val logFragment: Fragment = LogFragment()
+        val dashboardFragment: Fragment = DashboardFragment()
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
 
-        // set up dividers in the vertical layout
-        entriesRecyclerView.layoutManager = LinearLayoutManager(this).also {
-            val dividerItemDecoration = DividerItemDecoration(this, it.orientation)
-            entriesRecyclerView.addItemDecoration(dividerItemDecoration)
-        }
-
-        // continuously check database for changes and display items
-        lifecycleScope.launch {
-            (application as SleepApplication).db.entryDao().getAll().collect { databaseList ->
-                // Map each entity in the database to a displayable model if needed
-                databaseList.map { entity ->
-                    DisplayEntry(
-                        entity.date,
-                        entity.hours
-                    )
-                }.also { mappedList ->
-                    entries.clear()
-                    entries.addAll(mappedList)
-                    entryAdapter.notifyDataSetChanged()
-                }
+        // handle navigation selection
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            lateinit var fragment: Fragment
+            when (item.itemId) {
+                R.id.action_log -> fragment = logFragment
+                R.id.action_dashboard -> fragment = dashboardFragment
             }
+            fragmentManager.beginTransaction().replace(R.id.frame_layout, fragment).commit()
+            true
         }
+        // Set default selection
+        bottomNavigationView.selectedItemId = R.id.action_log
+        // Call helper method to swap the FrameLayout with the fragment
+        replaceFragment(LogFragment())
 
         // Button links to another page
-        val button = findViewById<Button>(R.id.add_entry_button)
+        val button = view.findViewById<Button>(R.id.add_entry_button)
 
         button.setOnClickListener {
             // intent to go to another page
             val intent = Intent(this@MainActivity, EntryActivity::class.java)
             this@MainActivity.startActivity(intent)
-
         }
+
+
+    }
+    // func to swap fragment
+    private fun replaceFragment(logFragment: LogFragment) {
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.frame_layout, logFragment)
+        fragmentTransaction.commit()
     }
 }
