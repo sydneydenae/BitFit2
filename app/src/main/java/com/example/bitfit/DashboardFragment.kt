@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +43,18 @@ class DashboardFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
+        val averageTextView = view.findViewById<TextView>(R.id.averageTextView)
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            // Collect the average hours from the Flow
+            (requireActivity().application as SleepApplication).db.entryDao().getAverageHours().collect { avgHours ->
+                // Switch to the main thread for UI updates
+                withContext(Dispatchers.Main) {
+                    val roundedAvgHours = String.format("%.2f", avgHours)
+                    averageTextView.text = roundedAvgHours.toString()
+                    Toast.makeText(requireContext(), avgHours.toString(), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
         // Button links to another page
         val button = view?.findViewById<Button>(R.id.clearButton)
@@ -63,22 +76,9 @@ class DashboardFragment : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DashboardFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DashboardFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        fun newInstance(): DashboardFragment {
+            return DashboardFragment()
+        }
     }
 }

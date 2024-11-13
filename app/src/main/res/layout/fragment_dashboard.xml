@@ -14,20 +14,23 @@ tools:context=".DashboardFragment">
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="96dp"
-            android:layout_marginTop="228dp"
+            android:layout_marginStart="72dp"
+            android:layout_marginTop="232dp"
             android:text="Total Hours Slept"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/averageTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="124dp"
             android:text="0"
             android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/textView"
             app:layout_constraintTop_toTopOf="@+id/textView" />
 
